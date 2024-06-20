@@ -24,9 +24,9 @@ Dễ thấy rằng sau mỗi vòng lặp của i, các phần tử cần đượ
 Ta thấy rằng khi dãy đã gần được sắp xếp xong, Insertion Sort sẽ chạy rất nhanh, ví dụ như sắp xếp điểm cao trong game.
 
 \begin{minted}{cpp}
-for (int i = 1; i < n; i++) {
+for (int i = 1; i < N; i++) {
     // Tìm vị trí phù hợp cho S[i] bằng tìm kiếm nhị phân
-    int l = 1, r = i - 1, m = -1;
+    int l = 0, r = i - 1;
     while (l <= r) {
         int m = (l + r) / 2;
         if (S[m] < S[i])
@@ -34,11 +34,11 @@ for (int i = 1; i < n; i++) {
         else
             r = m - 1;
     }
-    // Đưa S[i] về đúng vị trí (dời dãy)
+    // Đưa S[i] về vị trí l (dời dãy)
     int tmp = S[i];
-    for (int k = i; k > m; k--)
-        S[k] = k - 1;
-    S[j] = tmp;
+    for (int k = i; k > l; k--)
+        S[k] = S[k - 1];
+    S[l] = tmp;
 }
 \end{minted}
 
@@ -72,22 +72,27 @@ Thuật toán này nổi tiếng vì nó chạy nhanh nhất trong tất cả c�
 Tuy nhiên, ta thấy rằng độ phức tạp thời gian có phần ngẫu nhiên, phụ thuộc vào cách chọn \textbf{pivot}, nếu tất cả pivot được chọn đều trong trường hợp xấu nhất như trên, độ phức tạp sẽ tương đương với Insertion Sort $O(n^2)$, nhưng trong trường hợp ngẫu nhiên, trung bình là $O(n\log_2n)$ (ta chia đôi dãy sau mỗi lần gọi đệ quy, vậy có tối đa $\log_2n$ lần chia).
 
 \begin{minted}{cpp}
-void quickSort(int S[], int left, int right) {
-    int i = left, j = right;
-    int pivot = S[left + rand() % (right - left)];
+void quickSort(int* S, int l, int r) {
+    // điều kiện dừng đệ quy
+    if (l >= r) return;
+    
+    int i = l, j = r;
+    int pivot = S[l + rand() % (r - l + 1)];
+
     // đưa pivot về đúng vị trí
     while (i <= j) {
         while (S[i] < pivot) i++;
         while (S[j] > pivot) j--;
         if (i <= j) {
-            swap(S[i], S[j]);
+            std::swap(S[i], S[j]);
             i++; j--;
         }
     }
+
     // gọi đệ quy sắp xếp phần bên trái
-    quickSort(S, left, pivot - 1);
+    quickSort(S, l, j);
     // gọi đệ quy sắp xếp phần bên phải
-    quickSort(S, pivot + 1, high);
+    quickSort(S, i, r);
 }
 \end{minted}
 
@@ -111,25 +116,25 @@ Ta chia đôi dãy số (gọi đệ quy đến khi dãy con chỉ còn 1 phần
 
 \begin{minted}{cpp}
 // giả sử N là số phần tử
-int _S[N]; // S'
+int S_[N]; // S'
 
-void mergeSort(int S[N], int left, int right) {
+void mergeSort(int* S, int l, int r) {
     // dãy chỉ gồm 1 phần tử, điều kiện dừng đệ quy
-    if (left == right - 1) return;
+    if (l >= r) return;
     // chia đôi dãy
-    int mid = (l + r) / 2;
+    int m = l + (r - l) / 2;
     // gọi đệ quy chia đôi
-    mergeSort(S, left, mid);
-    mergeSort(S, mid + 1, right);
+    mergeSort(S, l, m);
+    mergeSort(S, m + 1, r);
     // bắt đầu so sánh
-    int i = left, j = mid + 1;
+    int i = l, j = m + 1;
     int cur = 0; // vị trí phần tử trong S'
-    while (i <= mid || j <= right) {
+    while (i <= m || j <= r) {
         // bên trái không còn phần tử nào
-        if (i > mid)
+        if (i > m)
             S_[cur++] = S[j++];
         // bên phải không còn phần tử nào
-        else if (j > right)
+        else if (j > r)
             S_[cur++] = S[i++];
         // phần tử bên trái nhỏ hơn
         else if (S[i] < S[j])
@@ -137,10 +142,9 @@ void mergeSort(int S[N], int left, int right) {
         else
             S_[cur++] = S[j++];
     }
-
     // copy mảng S_ trở lại S
-    for (int i = 0; i < cur; i++)
-        S[left + i] = a[i];
+    for (int k = 0; k < cur; k++)
+        S[l + k] = S_[k];
 }
 \end{minted}
 
