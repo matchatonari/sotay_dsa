@@ -1,0 +1,101 @@
+\chapter{Quy hoạch động}
+\section{Giới thiệu}
+Là một kỹ thuật lưu trữ các kết quả của đệ quy để sử dụng lại nhằm giảm số lần của đệ quy.
+
+Các dạng bài toán quy hoạch rất phong phú và đa dạng, ứng dụng nhiều trong thực tế, nhưng cũng cần biết rằng, đa số các bài toán quy hoạch là không giải được, hoặc chưa giải được. Cho đến nay, người ta mới chỉ có thuật toán đơn hình giải bài toán quy hoạch tuyến tính lồi, và một vài thuật toán khác áp dụng cho các lớp bài toán cụ thể.
+
+Cho đến nay, vẫn chưa có một định lý nào cho biết một cách chính xác những bài toán nào có thể giải quyết hiệu quả bằng quy hoạch động. Tuy nhiên để biết được bài toán có thể giải bằng quy hoạch động hay không, ta có thể tự đặt câu hỏi: "Một nghiệm tối ưu của bài toán lớn có phải là sự phối hợp các nghiệm tối ưu của các bài toán con hay không?" và "Liệu có thể nào lưu trữ được nghiệm các bài toán con dưới một hình thức nào đó để phối hợp tìm được nghiệm bài toán lớn được nghiệm bài toán lớn?"
+\section{Tính số cách phân tích một số thành tổng}
+Cho số tự nhiên $n\leq100$. Hãy cho biết có bao nhiêu cách phân tích số n thành tổng của dãy các số nguyên dương, các cách phân tích là hoán vị của nhau chỉ tính là một cách.
+
+Ví dụ: n = 5 có 7 cách phân tích:
+\begin{enumerate}
+    \begin{multicols}{2}
+        \item 5 = 1 + 1 + 1 + 1 + 1
+        \item 5 = 1 + 1 + 1 + 2
+        \item 5 = 1 + 1 + 3
+        \item 5 = 1 + 2 + 2
+        \item 5 = 1 + 4
+        \item 5 = 2 + 3
+        \item 5 = 5
+    \end{multicols}
+\end{enumerate}
+
+Lưu ý: n = 0 vẫn coi là có 1 cách (dãy rỗng).
+
+Ở chương quay lui ta đã giải bài toán này bằng cách liệt kê tất cả các cấu hình, bây giờ thử nghĩ xem có cách nào không cần liệt kê vẫn tính được không? Vì với n = 100 ta có tận 190,569,292 cách phân tích. Ta có nhận xét:
+
+Nếu gọi F[m][v] là số cách phân tích v thành tổng các số nguyên dương $\leq m$. Khi đó có 2 trường hợp:
+\begin{itemize}
+    \item Phép phân tích không chứa số m: lúc này số cách phân tích là số cách phân tích v thành tổng các số nguyên dương $<m$, hay $\leq m-1$ và bằng F[m - 1][v].
+    \item PHép phân tích có chứa ít nhất 1 số m: khi này nếu trừ m đi ở 2 vế ta được cách phân tích của số (v - m) thành tổng các số nguyên dương $\leq m$ hay F[m][v - m].
+\end{itemize}
+
+Ta thấy nếu $m>v$, rõ ràng chỉ có cách phân tích loại 1, còn nếu $m\leq v$ thì có cả 2 cách phân tích hay:
+$$
+F[m][v] = \left\{
+    \begin{array}{cc}
+        F[m-1][v] & (m > v)\cr
+        F[m-1][v] + F[m][v - m] & (m \leq v)\cr
+    \end{array}
+\right.
+$$
+Đây gọi là \textbf{công thức truy hồi} thể hiện mối liên hệ giữa bài toán lớn và các bài toán con. Đáp án sẽ là F[n][n]: số cách phân tích n thành các số nguyên dương $\leq n$.
+
+Phân tích mảng F với n = 5:
+
+\begin{tabular}{c|cccccc}
+    F & 0 & 1 & 2 & 3 & 4 & 5\cr\hline
+    0 & 1 & 0 & 0 & 0 & 0 & 0\cr
+    1 & 1 & 1 & 1 & 1 & 1 & 1\cr
+    2 & 1 & 1 & 2 & 2 & 3 & 3\cr
+    3 & 1 & 1 & 2 & 3 & 4 & 5\cr
+    4 & 1 & 1 & 2 & 3 & 5 & 6\cr
+    5 & 1 & 1 & 2 & 3 & 5 & 7\cr
+\end{tabular}
+
+Dễ thấy rằng F[m][v] được tính bằng phần tử cùng hàng bên trái và phần tử hàng trên, vậy suy ra trình tự tính bảng F phải là từ trái qua phải và trên xuống dưới. Vậy ta dựng giải thuật: khởi tạo dòng 0 có F[0][0] = 1 và tính bằng công thức truy hồi cho toàn bộ bảng.
+
+\subsection{Tiết kiệm bộ nhớ và đệ quy có nhớ}
+Vì nếu khởi tạo bảng F n x n trong khi ta chỉ dùng hàng trên thì gây lãng phí bộ nhớ, ta hoàn toàn có thể khởi tạo mảng chỉ có 2 hàng, tính xong hàng trên thì xuống hàng dưới, tính xong hàng dưới rồi quay lại đè lên hàng trên (ta không cần nữa), hoặc có thể tính trực tiếp trên mảng F 1 chiều n phần tử, ghi đè lên giá trị hiện tại.
+
+Có thể thấy kĩ thuật quy hoạch động đòi hỏi phải xác định chính xác trình tự tính, vì vậy sẽ gây khó khăn trong trường hợp công thức truy hồi quá phức tạp, vì vậy người ta còn dùng đệ quy có nhớ, nghĩa là nếu chưa biết kết quả của bài toán đó thì gọi đệ quy tính, biết rồi thì ghi vào bảng F để lưu lại. Ngoài ra nó còn làm rõ hơn bản chất của đệ quy.
+
+\section{Dãy con đơn điệu tăng dài nhất}
+Cho dãy số A. Một dãy con của A là một cách chọn ra trong A một số phần tử (giữ nguyên thứ tự). Tìm dãy con đơn điệu tăng của A có nhiều phần tử nhất.
+
+\begin{tabular}{l|l}
+    INCSEQ.INP & INCSEQ.OUT\cr\hline
+    11 & 8\cr
+    1 2 3 8 9 4 5 6 20 9 10 &\cr
+\end{tabular}
+
+Đáp án là dãy (1, 2, 3, 4, 5, 6, 9, 10).
+
+Nhận xét: Nếu gọi F[i] là độ dài dãy con tăng dài nhất kết thúc tại vị trí i, trong các phần tử $a[j]\leq a[i]$, ta luôn có
+$$
+    F[i] = \max_{1\leq j\leq i-1} F[j]+1
+$$
+Đây chính là công thức truy hồi, và ta đã có thể giải bài toán này trong $O(n^2)$ thay vì phải xét qua $2^n$ dãy con như phương pháp quay lui.
+\subsection{Tăng tốc}
+Tuy nhiên ta có thể làm tốt hơn nữa bằng cách gọi $B[k]$ là phần tử cuối cùng của dãy con tăng độ dài k. Có thể dễ dàng chứng minh rằng $B[k]\geq B[k-1]$ vì nếu $B[k]<B[k-1]$ có nghĩa là trước $F[i]$ có một $F[j]>F[i]$ mà $A[j]<A[i]$.
+
+Vậy cách tính công thức truy hồi lần này không phải là tìm $F[j]$ lớn nhất nữa, mà là tìm $B[j]$ có $B[j]<A[i]$ và $B[j+1]>A[i]$, ta sẽ đặt lại $F[i]=j+1$ và $B[j+1]=A[i]$. Ta có thể sử dụng tìm kiếm nhị phân để tìm ra j, độ phức tạp tính toán được giảm xuống còn $O(n\log_2 n)$. Dễ nhận thấy rằng dãy B thực chất là dãy con mà ta đang tìm kiếm, và vì dãy tăng càng chậm thì dãy càng dài, đó là lí do ta đang cực tiểu hoá từng phần tử của B.
+
+\section{Bài toán cái túi}
+Có n món đồ, món thứ i có giá trị v[i] và khối lượng w[i]. Bạn có một cái túi có thể chứa W đơn vị khối lượng, hãy tìm cách chọn các món đồ sao cho giá trị thu được là lớn nhất mà không làm túi rách.
+
+Nhận xét: Nếu gọi F[i][j] là giá trị tối đa có được nếu chọn các vật trong tập [1\dots i] và khối lượng không vượt quá j, ta có 2 khả năng khi xét tới vật i và khối lượng j:
+\begin{itemize}
+    \item Không lấy vật i hay giá trị thu được bằng với giá trị thu được khi xét tới vật $i-1$ với túi có thể chứa j đơn vị khối lượng. Tóm lại, $F[i][j] = F[i - 1][j]$.
+    \item Lấy vật i: chúng ta mất đi w[i] đơn vị khối lượng, nhưng có thêm v[i] giá trị, hay $F[i][j] = F[i - 1][j - w[i]] + v[i]$.
+    
+    Lưu ý: để lấy vật i phải kèm điều kiện $j\geq w[i]$.
+\end{itemize}
+
+Và cuối cùng ta muốn giá trị thu được là tối đa nên:
+$$
+F[i][j] = \max(F[i - 1][j], F[i - 1][j - w[i]] + v[i])
+$$
+
+Sử dụng công thức truy hồi này cho toàn bộ các ô (i, j) có $j\geq w[i]$, với các ô còn lại (không đủ chỗ trống cho vật i) thì không thể lấy vật i, ta gán thẳng $F[i-1][j]$ cho nó.

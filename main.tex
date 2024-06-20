@@ -1,0 +1,64 @@
+\documentclass{report}
+
+\usepackage[vietnamese]{babel}
+\usepackage{vntex}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{etoc}
+\usepackage{tgschola}
+\usepackage{minted}
+\usepackage{graphicx}
+\graphicspath{{./img/}}
+\usepackage{titlesec}
+\usepackage{titletoc}
+\usepackage{algpseudocode}
+\usepackage[a5paper,left=20mm,right=20mm,bottom=20mm,top=20mm]{geometry}
+\usepackage{multicol}
+
+\newtheorem{theorem}{Định lý}
+
+\title{Sổ tay Cấu trúc Dữ liệu và Giải thuật}
+\author{Một sinh viên K23 ngành Khoa học Máy tính \\ (CT Định hướng Nhật Bản) \\ Trường ĐH Bách khoa, ĐHQG-HCM}
+\date{\today}
+
+\hypersetup{
+    colorlinks,
+    citecolor=black,
+    filecolor=black,
+    linkcolor=black,
+    urlcolor=blue
+}
+
+\pagestyle{fancy}
+\lhead{}
+\rhead{Sổ tay Cấu trúc Dữ liệu và Giải thuật}
+
+\begin{document}
+
+\maketitle
+
+\include{src/loinoidau}
+
+\tableofcontents
+\thispagestyle{empty} % remove page number on ToC
+
+\renewcommand{\contentsname}{}
+
+\titleformat{\chapter}[block]%
+{\bfseries\Large\filleft}%
+{\fontsize{60}{50}\selectfont\color{gray}\thechapter}%
+{1em}
+{\fontsize{30}{50}\selectfont\scshape}%
+[\vspace{-2ex}\normalsize\normalfont\vspace*{1cm}%
+\hbox{\large\bfseries\contentsname}\vspace{0.5cm}\titlerule\vspace{0.5cm}
+\startcontents
+\printcontents{l}{1}{\setcounter{tocdepth}{1}}\vspace{0.5cm}
+\titlerule\vspace{1pc}]
+
+\include{src/quaylui}
+\include{src/timkiem}
+\include{src/sapxep}
+\include{src/qhd}
+\include{src/dothi}
+
+\end{document}
